@@ -10,9 +10,13 @@ public class Rettangolo extends Shape {
         this.altessa = altessa;
     }
 
-
     @Override
     public Double area() {
         return basse * altessa;
+    }
+
+    @Override
+    public void descrivi(){
+        System.out.println("Rettangolo descrivi ");
     }
 }

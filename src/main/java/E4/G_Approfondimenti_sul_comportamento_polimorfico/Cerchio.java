@@ -14,4 +14,10 @@ public class Cerchio extends Shape {
         return raggio * raggio * 3.1415;
     }
 
+    @Override
+    public void descrivi() {
+        System.out.println("Cerchio descrivi ");
+    }
+
+
 }

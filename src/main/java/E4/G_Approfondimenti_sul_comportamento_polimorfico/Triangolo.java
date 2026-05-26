@@ -15,4 +15,8 @@ public class Triangolo extends Shape {
         return (basse * altessa) / 2;
     }
 
+    @Override
+    public void descrivi(){
+        System.out.println("Triangolo descrivi ");
+    }
 }
