@@ -1,95 +1,64 @@
 package E5.F_Introduzione_al_try_catch;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 public class CreateList {
     public static void main() {
         System.out.println("26. Gestione della divisione per zero ------------------------");
-        Set<Integer> numeri = new HashSet<>();
-        numeri.add(1);
-        numeri.add(2);
-        numeri.add(3);
-        numeri.add(4);
-        System.out.println(numeri);
-        numeri.removeIf(n -> n < 5);
-        System.out.println(numeri);
-        System.out.println("22. Set di parole uniche --------------------------------");
-        Set<String> nomi = new HashSet<>();
-        String nome = "";
-        while (!nome.equals("fine")) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Inserisce un nome o fine per uscire: ");
-            nome = scanner.nextLine();
-            if (!nome.equals("fine")) nomi.add(nome);
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Inserisce un numerador A: ");
+        int A = scanner.nextInt();
+        System.out.print("Inserisce un denominador B: ");
+        int B = scanner.nextInt();
+        try {
+            double result = A / B;
+            System.out.println("result: " + A + "/" + B + "=" + result);
+        } catch (ArithmeticException e) {
+            System.out.println("Errore: impossibile dividere per zero.");
         }
-        System.out.println(nomi.size());
-        System.out.println("23. Intersezione tra Set --------------------------------");
-        Set<Integer> numeriA = new HashSet<>();
-        numeriA.add(1);
-        numeriA.add(2);
-        Set<Integer> numeriB = new HashSet<>();
-        numeriB.add(1);
-        numeriB.add(2);
-        Set<Integer> comuniA = new HashSet<>(numeriA);
-        comuniA.retainAll(numeriB);
-        System.out.println(comuniA);
-        System.out.println("24. Unione di Set ---------------------------------------");
-        Set<String> nomeA = new HashSet<>();
-        nomeA.add("Juan");
-        nomeA.add("Pedro");
-        Set<String> nomeB = new HashSet<>();
-        nomeB.add("Juan");
-        nomeB.add("Pedro");
-        Set<String> comuniB = new HashSet<>(nomeA);
-        comuniB.addAll(nomeB);
-        System.out.println(comuniB);
-        System.out.println("25. Differenza tra Set ---------------------------------");
-        //Usare due set di interi numeriA e numeriB
-        System.out.println(numeriA);
-        System.out.println(numeriB);
-        numeriA.removeAll(numeriB);
-        System.out.println(numeriA);
-
-
-
-
-
-
-
-
-
-    }
-
-    public static <T> void Schermo(List<T> Lista) {
-        for (T elemento : Lista) {
-            System.out.println(elemento);
+        System.out.println("27. Conversione di input errato ------------------------------");
+        try {
+            System.out.print("Inserisce un numero: ");
+            int C = scanner.nextInt();
+            System.out.println(C);
+        } catch (InputMismatchException e) {
+            System.out.println("Errore: impossibile inserisce un String.");
         }
-    }
-
-    public static int SommaTutti(List<Integer> Lista) {
-        int accu = 0;
-        for (int elemento : Lista) {
-            accu += elemento;
+        System.out.println("28. Accesso a indice non valido -------------------------------");
+        try {
+            String[] nomi = new String[3];
+            nomi[0] = "Juan";
+            nomi[1] = "Juan";
+            nomi[2] = "Juan";
+            System.out.print("Inserisce un Indice del array: ");
+            int C = scanner.nextInt();
+            System.out.println("Il Array contenuto e " + nomi[C]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Errore: Indice di Array non essiste.");
         }
-        return accu;
-    }
-
-    public static void RemovePar(List<Integer> Lista) {
-        for (int X = 0; X < Lista.size(); X++) {
-            if (Lista.get(X) % 2 != 0) {
-                Lista.remove(X);
+        System.out.println("29. File non trovato ------------------------------------------");
+        try {
+            File file = new File("C:/Users/ruti_/OneDrive/Escritorio/Listbox para cargar nuevos filtros.txt");
+            Scanner scannerFile = new Scanner(file);
+            while (scannerFile.hasNextLine()) {
+                System.out.println(scannerFile.nextLine());
             }
+            scannerFile.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Errore: il file non è stato trovato.");
         }
-    }
-
-    public static void MediaNum(List<Integer> Lista) {
-        int somma = 0;
-        for (int X = 0; X < Lista.size(); X++) {
-            somma += Lista.get(X);
+        System.out.println("30. Blocco multiplo di catch ----------------------------------");
+        try {
+            Scanner fileScanner = new Scanner(new File("C:/Users/ruti_/OneDrive/Escritorio/Listbox para cargar nuevos filtros.txt"));
+            int numero = fileScanner.nextInt();
+            System.out.println("Numero letto: " + numero);
+            fileScanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Errore: il file non è stato trovato.");
+        } catch (InputMismatchException e) {
+            System.out.println("Errore: nel file non c'è un numero valido.");
         }
-        System.out.println("Le Medie: " + somma / Lista.size());
     }
 }
