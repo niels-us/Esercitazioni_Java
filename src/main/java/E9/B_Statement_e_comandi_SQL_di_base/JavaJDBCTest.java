@@ -42,15 +42,27 @@ public class JavaJDBCTest {
         showTable(("Select * from " + Table + " LIMIT 3"));
 
         System.out.println("18 – Gestione delle eccezioni SQL -------------------------");
+        showTable(("Select * from " + Table + "LIMIT 3"));
 
+        System.out.println("19 – Uso di execute() -------------------------------------");
+        testExecute("Select * from " + Table + " LIMIT 3");
 
+        System.out.println("20 – Separare la logica SQL in metodi ---------------------");
+        Table = "Autor";
+        sql = "CREATE TABLE IF NOT EXISTS " + Table + " (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "nome VARCHAR(50) NOT NULL, " +
+                "email VARCHAR(50) NOT NULL " +
+                ")";
+        Script_SQL(sql);
+
+        Script_SQL("Insert into " + Table + " (nome, email) values ('Niels','niels@gmail.com')");
+        showTable("Select * from " + Table);
 
 
     }
 
-   /* public static void testExecute() {
-        String sql = "SELECT * FROM autori";
-
+    public static void testExecute(String sql) {
         try (Connection conn = DBConfig.getConnection();
              Statement stmt = conn.createStatement()) {
 
@@ -61,7 +73,7 @@ public class JavaJDBCTest {
 
                 while (rs.next()) {
                     System.out.println(
-                            "ID: " + rs.getInt("autore_id") +
+                            "ID: " + rs.getInt("autori_id") +
                                     ", Nome: " + rs.getString("nome") +
                                     ", Email: " + rs.getString("email")
                     );
@@ -73,7 +85,7 @@ public class JavaJDBCTest {
         } catch (SQLException e) {
             throw new RuntimeException("Errore nell'uso di execute()", e);
         }
-    }*/
+    }
 
     public static void SelectAutori(String sql) {
         try (Connection conn = DBConfig.getConnection();
@@ -100,7 +112,7 @@ public class JavaJDBCTest {
             printResultSet(rs);
             conn.close(); // Chiudiamo la connessione
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.out.println("Errore nella execution SQL: " + e.getMessage());
         }
     }
 
