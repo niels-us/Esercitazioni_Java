@@ -1,0 +1,4 @@
+{
+  "paymentProcessor": "E10.D_Approfondimenti_e_applicazioni.CreditCardProcessor",
+  "transactionLogger": "E10.D_Approfondimenti_e_applicazioni.TransactionLogger"
+}

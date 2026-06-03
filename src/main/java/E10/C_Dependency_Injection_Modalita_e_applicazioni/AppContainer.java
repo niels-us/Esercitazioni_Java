@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.lang.reflect.Field;
 
 public class AppContainer {
 
@@ -28,16 +29,9 @@ public class AppContainer {
         } else if ("transactionLogger".equals(name)) {
             bean = new TransactionLogger();
         } else if ("paymentService".equals(name)) {
-            bean = new PaymentService(
-                    (IPaymentProcessor) getBean("paymentProcessor"),
-                    (TransactionLogger) getBean("transactionLogger")
-            );
+            bean = new PaymentService();
         } else if ("refundService".equals(name)) {
-            PaymentService service = new PaymentService(
-                    (IPaymentProcessor) getBean("paymentProcessor"),
-                    (TransactionLogger) getBean("transactionLogger")
-            );
-            service.initialize();
+            PaymentService service = new PaymentService();
             bean = service;
         }
         if (bean != null) {
@@ -60,12 +54,9 @@ public class AppContainer {
         } else if (type == TransactionLogger.class) {
             bean = getBean("transactionLogger");
         } else if (type == PaymentService.class) {
-            PaymentService service = new PaymentService(
-                    (IPaymentProcessor) getBean("paymentProcessor"),
-                    (TransactionLogger) getBean("transactionLogger")
-            );
-            service.initialize();
-            bean = service;
+            bean = new PaymentService();
+            ((PaymentService) bean).setPaymentProcessor((IPaymentProcessor) getBean("paymentProcessor"));
+
         } else if (type == RefundService.class) {
             bean = new RefundService(
                     (IPaymentProcessor) getBean("paymentProcessor"),
@@ -103,16 +94,51 @@ public class AppContainer {
         //throw new IllegalArgumentException("Processor sconosciuto: " + name);
     }
 
-    public void printBeans() {
-        for (Map.Entry<String, Object> entry : beans.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
+    public IPaymentProcessor getProcessorForAmount(double amount) {
+        if (amount > 500) {
+            return new PayPalProcessor();
+        }
+        return new CreditCardProcessor();
+    }
+
+    public void injectDependencies(Object target) {
+        //Recorre los campos del objeto target.
+        for (Field field : target.getClass().getDeclaredFields()) {
+            System.out.println("field: " + field.getName() + " -> " + Inject.class.getSimpleName());
+            //Si encuentra un campo anotado con @Inject
+            if (field.isAnnotationPresent(Inject.class)) {
+                Object dependency = null;
+                //crea la dependencia correspondiente y la asigna automáticamente
+                // a ese campo usando reflexión.
+                if (field.getType() == IPaymentProcessor.class) {
+                    dependency = getProcessor("paypal"); // o "creditcard"
+                } else if (field.getType() == NotificationService.class) {
+                    dependency = new NotificationService();
+                } else if (field.getType() == TransactionLogger.class) {
+                    dependency = new TransactionLogger();
+                }
+
+                try {
+                    field.setAccessible(true);
+                    field.set(target, dependency);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException("Errore nell'iniezione automatica", e);
+                }
+            }
         }
     }
 
-    public void close() {
-        PaymentService service = (PaymentService) beans.get("paymentService");
-        if (service != null) {
-            service.shutdown();
+    public void injectAndInit(Object target) {
+        injectDependencies(target);
+
+        if (target instanceof PaymentService service) {
+            service.init();
+        }
+    }
+
+    public void destroy(Object target) {
+        if (target instanceof PaymentService service) {
+            service.destroy();
         }
     }
 }
