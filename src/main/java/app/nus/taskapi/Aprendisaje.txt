@@ -1,0 +1,53 @@
+1. Creazione del progetto con Spring Initializr
+Se aprendió a crear un proyecto Spring Boot con Spring Initializr, configurándolo con Maven, Java, Spring Web y packaging Jar. También se revisó la estructura básica del proyecto y se verificó que la configuración debe coincidir con lo pedido, como el groupId.
+2. Analizzare il pom.xml
+Se aprendió a analizar el pom.xml de un proyecto Spring Boot y a identificar sus componentes clave: el parent de Spring Boot y la dependencia spring-boot-starter-web. También se entendió que esa dependencia ya incluye Tomcat y Jackson, así que prepara el proyecto para ejecutar una aplicación web y manejar JSON.
+3. Avviare l’applicazione
+Se aprendió que una aplicación Spring Boot no debe estar en el paquete por defecto. La clase principal debe tener un package definido, porque Spring usa esa ubicación para detectar componentes y configurar la aplicación correctamente. También se vio la estructura correcta de una clase @SpringBootApplication con main(String[] args) y SpringApplication.run(...).
+4. Creare il primo controller
+Se aprendió a crear un controlador REST básico en Spring Boot con @RestController y @GetMapping para exponer la ruta /hello. Al visitar esa URL en el navegador, el servidor devuelve un texto como respuesta.
+5. Creare la prima risorsa Task
+Se aprende a crear una clase de modelo simple en Spring Boot para representar una tarea. La clase Task encapsula datos básicos como id, title y completed, y usa constructor vacío, constructor completo y getters/setters para poder instanciarla y manipularla correctamente en la aplicación.
+6. Creare un controller dedicato
+Se aprende a crear un controlador específico para Task usando @RestController y @RequestMapping("/api/tasks"), agrupando las rutas de la API bajo un prefijo común. Esto mejora la organización de la aplicación y deja lista la estructura para añadir operaciones sobre tareas.
+7. Simulare uno storage in memoria
+Se aprende a simular un almacenamiento en memoria dentro del controlador usando una List<Task> para guardar tareas y un AtomicLong para generar identificadores únicos. Esto permite manejar datos sin base de datos y preparar la lógica básica de CRUD de forma simple.
+8. Creare l’endpoint GET /api/tasks
+Se aprendió a organizar mejor una API en Spring Boot separando los controladores por responsabilidad. También se vio cómo definir un endpoint GET /api/tasks que devuelve una lista en memoria, usando List<Task> y @RequestMapping para agrupar las rutas de tareas bajo un prefijo común.
+9. Creare l’endpoint POST /api/tasks
+curl http://localhost:8080/api/tasks
+curl -X POST http://localhost:8080/api/tasks -H "Content-Type: application/json"  -d '{"title":"Studiare Spring","completed":false}'
+10. Aggiungere logica di validazion
+$ curl -X POST http://localhost:8080/api/tasks -H "Content-Type: application/json"  -d '{"ttitle":"Studiare Spring","completed":false}'
+{"timestamp":"2026-06-04T15:16:14.962+00:00","status":400,"error":"Bad Request","path":"/api/tasks"}
+El error esta en ttitle.
+11. Creare l’endpoint GET /api/tasks/{id}
+curl http://localhost:8080/api/tasks/1
+12. Implementare DELETE /api/tasks/{id}
+curl -X DELETE http://localhost:8080/api/tasks/1
+13. Implementare PUT /api/tasks/{id}
+curl -X PUT http://localhost:8080/api/tasks/1 -H "Content-Type: application/json"  -d '{"title":"Studiare Spring MODIFIED","completed":false}'
+14. Gestire i codici di stato HTTP
+curl -i -X POST http://localhost:8080/api/tasks -H "Content-Type: application/json"  -d '{"title":"Studiare Spring","completed":false}'
+15. Aggiungere un logger
+El logger en Spring Boot se implementa con SLF4J: private static final Logger log = LoggerFactory.getLogger(Clase.class);
+Se usa con niveles (info, warn, error) y sintaxis {} para variables: log.info("Mensaje: {}", variable);
+16. Restituire messaggi di errore personalizzati
+@ControllerAdvice crea un interceptor global que captura excepciones de todos los controllers automáticamente.
+@ExceptionHandler define qué excepción capturar (ResponseStatusException) y la convierte en una respuesta JSON personalizada.
+Solo creas la clase una vez; Spring Boot la registra automáticamente y tu código solo necesita lanzar throw new ResponseStatusException(...).
+17. Aggiungere ordinamento per titolo
+curl http://localhost:8080/api/tasks/sorted
+sorted(Comparator.comparing(Task::getTitle)) ordena automáticamente la lista según el campo title en orden alfabético.
+Se crea un endpoint separado /sorted que no modifica la lista original, solo devuelve una copia ordenada.
+Method Reference Task::getTitle es una forma concisa de decir "usa el método getTitle de cada Task para comparar".
+18. Filtrare per stato completato
+curl http://localhost:8080/api/tasks?completed=false
+@GetMapping(params = "completed") crea un endpoint condicional que solo responde cuando el parámetro completed está presente en la URL.
+@RequestParam boolean completed captura automáticamente el valor del parámetro (true o false) desde la query string.
+filter(t -> t.isCompleted() == completed) filtra la lista devolviendo solo los tasks que coinciden con el estado solicitado.
+19. Aggiungere una risposta con contatore
+curl http://localhost:8080/api/tasks/count
+Map<String, Object> como tipo de retorno permite crear un JSON dinámico sin necesidad de crear una clase DTO específica.
+Map.of("totalTasks", tasks.size()) construye un objeto JSON con un solo par clave-valor de forma ultra concisa.
+El endpoint /api/tasks/count devuelve {"totalTasks": N} donde N es el número total de elementos en la lista.
