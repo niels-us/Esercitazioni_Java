@@ -1,0 +1,93 @@
+22. Creazione della classe principale
+Que @SpringBootApplication marca la clase principal de la app y SpringApplication.run(...) arranca el contenedor Spring Boot.
+Al iniciar, Spring Boot configura el contexto y muestra el banner de arranque.
+También aprendes que necesitas las dependencias correctas para usar SpringApplication.
+23. Annotare PaymentService con @Service
+@SpringBootApplication activa el component scan.
+PaymentService con @Service será detectado automáticamente.
+La clase principal debe estar en un paquete raíz que incluya PaymentService en su subpaquete.
+Si quieres, te doy un ejemplo de estructura de carpetas para que Spring lo encuentre sin problemas.
+24. Creazione di un controller REST
+Que un @RestController expone endpoints HTTP para llamar a la lógica de negocio desde fuera.
+@PathVariable permite recibir valores dinámicos desde la URL y pasarlos al servicio.
+Así separas la capa web de la capa de negocio y puedes probar el servicio por navegador o cliente HTTP.
+25. Aggiunta dello starter Web
+@SpringBootApplication no basta para que una app web arranque: además necesitas la dependencia del servidor
+embebido, normalmente spring-boot-starter-web. El warning de java.lang.System::load era secundario; el problema
+ real era que faltaba un ServletWebServerFactory en el contexto, así que Spring Boot no tenía con qué levantar
+ el servidor.
+Se solucionó al corregir un conflicto de dependencias entre versiones de Spring. @SpringBootApplication solo
+habilita el arranque, pero el cambio decisivo fue alinear spring-context:6.2.0 con el resto del entorno,
+permitiendo que Spring Boot cargara correctamente el contexto y el servidor web.
+26. Creazione di application.properties
+Se aprendió que application.properties permite externalizar configuración y que Spring Boot la carga
+automáticamente al arrancar. Para comprobarlo, se puede leer la propiedad en un bean con @Value o Environment
+y ejecutar código de inicio con CommandLineRunner o ApplicationRunner, que Spring detecta y ejecuta después de crear el contexto.
+27. Iniezione di proprietà
+Se aprendió a inyectar una propiedad definida en application.properties dentro de un bean de Spring usando
+@Value("${app.name}"). También se vio que la inyección debe hacerse a nivel de clase, no dentro de un método,
+y que el valor puede usarse en la lógica del servicio o imprimirse para verificar que Spring lo cargó correctamente.
+28. Aggiunta dello starter JPA
+spring-boot-starter-data-jpa no funciona “solo”.
+Necesita una base de datos configurada o embebida.
+La auto-configuración de Spring Boot depende de las dependencias y de las propiedades presentes.
+29. Uso del database H2
+Se aprendió a usar una base de datos en memoria con H2 para que Spring Boot pueda auto-configurar el DataSource
+sin necesidad de un servidor externo. Al agregar la dependencia h2, Spring Boot detecta la base embebida, la crea
+automáticamente al arrancar y permite probar JPA y la persistencia en memoria.
+30. Analizzare il log di avvio
+Spring Boot arrancó correctamente con Tomcat en el puerto 8080 y configuró automáticamente JPA con una base H2 en
+memoria. El log muestra la inicialización de Hibernate, el EntityManagerFactory y la conexión Hikari, y al final
+se imprime app.name = PaymentApp, confirmando que también leyó la configuración externa.
+Se aprendió que Spring Boot puede auto-configurar automáticamente Tomcat, H2 y JPA, y que el log de arranque sirve
+para verificarlo. También se confirmó que application.properties se lee correctamente al imprimirse app.name = PaymentApp.
+31. Override delle configurazioni
+Se aprendió a sobrescribir la configuración de Spring Boot con una implementación personalizada usando
+@Configuration y @Bean. También se vio que la inyección por constructor requiere que la clase concreta implemente
+ la interfaz correcta; en este caso, CreditCardProcessor debía implementar IPaymentProcessor para que Spring
+ pudiera inyectarlo en PaymentService.
+32. Disabilitare un’auto-configurazione
+Se aprendió a desactivar una auto-configuración de Spring Boot usando exclude = DataSourceAutoConfiguration.class
+ en @SpringBootApplication. Con eso, Spring ya no intenta configurar automáticamente la base de datos, y el log
+ deja de mostrar la inicialización de DataSource.
+ 33. Uso di YAML
+ Se aprendió que Spring Boot también puede leer configuración desde application.yml, no solo desde
+ application.properties. El valor se define con sangría YAML y se usa igual en el código con @Value("${app.name}").
+34. Profili multipli ---> revisar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Se aprendió a usar perfiles de Spring Boot para separar configuraciones por entorno, y que application-prod.yml
+solo se carga cuando el perfil prod está realmente activo. También quedó claro que application.yml se lee siempre,
+por eso al renombrarlo Spring lo reconoce sin depender del perfil.
+35. Iniezione condizionale ---> revisar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Se aprendió a usar @Profile para activar beans distintos según el entorno. Con eso, Spring puede registrar una
+implementación en dev y otra en prod, cambiando el comportamiento de la aplicación sin tocar el servicio principal.
+36. Test con Spring Boot
+Se aprendió a validar que el contexto de Spring Boot arranca correctamente con @SpringBootTest y que los beans
+principales, como PaymentService, se crean sin errores. También se comprobó que en el entorno de prueba Spring
+puede cargar perfiles y propiedades, como app.name = PaymentApp-PROD, y que el exit code 0 confirma que el test pasó.
+37. Uso di @PostConstruct
+Se aprendió a usar @PostConstruct para ejecutar código justo después de que Spring cree e inicialice un bean.
+En este caso, PaymentService muestra un mensaje al arrancar, lo que permite comprobar su ciclo de vida dentro del
+contenedor.
+38. Analisi delle condizioni di auto-configurazione Obiettivo
+Spring Boot crea un bean automáticamente solo si se cumplen las condiciones definidas por la auto-configuración,
+como que exista cierta clase en el classpath (@ConditionalOnClass) y que no haya ya un bean definido por el usuario
+para ese tipo (@ConditionalOnMissingBean). En resumen: Spring Boot auto-configura por defecto, pero deja de hacerlo
+si detecta que tú ya configuraste ese componente.
+39. Creazione di uno starter personalizzato ---> revisar!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Se aprendió cómo Spring Boot carga auto-configuraciones internas y cómo se puede imitar ese mecanismo con un starter
+propio. En Spring Boot 3, la forma correcta es registrar la clase con @AutoConfiguration y
+META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports, para que la configuración se aplique
+ automáticamente al añadir la dependencia.
+ 40. Mini-progetto finale
+ Se aprendio a integrar ttodo lo visto en una aplicación Spring Boot completa: arranque con @SpringBootApplication,
+ exposición de un endpoint REST /pay/{amount}, uso de PaymentService y PaymentProcessor, e inyección de configuración
+  externa con app.name. La idea final es que Spring Boot resuelva automáticamente beans, configuración y servidor
+  web sin necesidad de configuración manual adicional.
+
+
+
+
+
+
+
+
